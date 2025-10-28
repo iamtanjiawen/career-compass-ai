@@ -136,6 +136,10 @@ http://localhost:3000
 - Receive personalized learning paths
 - Get resource recommendations
 
+### 5. Mock Interview
+- Enter your target role
+- Receive personalized interview questions
+- Answer questions by using manual typing or voice input
 ---
 
 ## 🎯 Project Structure
