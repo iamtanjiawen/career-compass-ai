@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { ArrowRight, Target, TrendingUp, Briefcase, Zap, Globe, Award, Brain, Mic, Video} from 'lucide-react';
+import { ArrowRight, Target, TrendingUp, Briefcase, Zap, Globe, Award, Brain, Mic, Video, FileText} from 'lucide-react';
 import AIChatbot from './components/AIChatbot'; 
 
 export default function Home() {
@@ -64,6 +64,7 @@ export default function Home() {
               <Brain className="mr-2" />
               Take Career Quiz
             </Link>
+            
             <Link 
               href="/interview"
               className="inline-flex items-center bg-green-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-green-700 transition-colors shadow-lg"
@@ -78,6 +79,15 @@ export default function Home() {
             >
               <Video className="mr-2" />
               Live Video Interview
+            </Link>
+            
+            {/* Updated Upload Resume button */}
+            <Link 
+              href="/resume-analyzer" 
+              className="inline-flex items-center bg-orange-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-orange-700 transition-colors shadow-lg"
+            >
+              <FileText className="mr-2" />
+              Upload Resume
             </Link>
           </div>
 

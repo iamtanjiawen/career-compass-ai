@@ -116,10 +116,13 @@ export default function ResultsPage() {
     );
   }
 
-  const { data, metadata, liveJobs, jobBoards, platformSearchLinks, companyJobListings } = analysisData;
+  const { data, metadata, liveJobs, jobBoards, platformSearchLinks, companyJobListings, resumeAnalysis } = analysisData;
   const completedCount = Object.values(progress).filter(Boolean).length;
   const totalMonths = data.learningPath.length;
   const progressPercentage = (completedCount / totalMonths) * 100;
+  
+  // Check if resume analysis exists
+  const hasResumeAnalysis = resumeAnalysis && Object.keys(resumeAnalysis).length > 0;
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4">
@@ -491,6 +494,7 @@ export default function ResultsPage() {
         <div className="bg-white rounded-lg shadow p-6 mb-8 print:hidden">
           <h3 className="font-bold text-gray-900 mb-4">Quick Navigation</h3>
           <div className="grid md:grid-cols-4 gap-3">
+            {hasResumeAnalysis && <a href="#resume-analysis" className="text-sm text-blue-700 hover:text-blue-800 hover:underline">📄 Resume Analysis</a>}
             <a href="#skills-gap" className="text-sm text-blue-700 hover:text-blue-800 hover:underline">📊 Skills Gap</a>
             <a href="#learning-path" className="text-sm text-blue-700 hover:text-blue-800 hover:underline">📚 Learning Path</a>
             <a href="#projects" className="text-sm text-blue-700 hover:text-blue-800 hover:underline">💼 Projects</a>
@@ -500,6 +504,159 @@ export default function ResultsPage() {
             <a href="#interview" className="text-sm text-blue-700 hover:text-blue-800 hover:underline">🎤 Interview Prep</a>
           </div>
         </div>
+
+        {/* Resume Analysis Section */}
+        {hasResumeAnalysis && (
+          <div id="resume-analysis" className="bg-white rounded-lg shadow p-8 mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">📄 Resume Analysis Report</h2>
+            
+            {/* ATS Score Card */}
+            <div className={`rounded-lg p-6 border-2 mb-6 ${
+              resumeAnalysis.atsScore >= 80 ? 'bg-green-50 border-green-500' :
+              resumeAnalysis.atsScore >= 60 ? 'bg-yellow-50 border-yellow-500' :
+              'bg-red-50 border-red-500'
+            }`}>
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">ATS Compatibility Score</h3>
+                  <p className="text-sm text-gray-600">How well your resume passes Applicant Tracking Systems</p>
+                </div>
+                <div className="text-center">
+                  <p className={`text-5xl font-bold ${
+                    resumeAnalysis.atsScore >= 80 ? 'text-green-600' :
+                    resumeAnalysis.atsScore >= 60 ? 'text-yellow-600' :
+                    'text-red-600'
+                  }`}>
+                    {resumeAnalysis.atsScore}
+                  </p>
+                  <p className="text-sm text-gray-600">/ 100</p>
+                </div>
+              </div>
+
+              {/* Score Breakdown */}
+              {resumeAnalysis.atsScoreBreakdown && (
+                <div className="grid grid-cols-5 gap-3">
+                  {Object.entries(resumeAnalysis.atsScoreBreakdown).map(([key, score]) => (
+                    <div key={key} className="text-center bg-white rounded-lg p-3 border">
+                      <p className="text-xs text-gray-600 capitalize mb-1">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
+                      <p className={`text-xl font-bold ${
+                        score >= 80 ? 'text-green-600' :
+                        score >= 60 ? 'text-yellow-600' :
+                        'text-red-600'
+                      }`}>{score}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Match Percentage */}
+            <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6 mb-6">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-lg font-semibold text-gray-900">Match for {metadata.targetRole}</p>
+                <p className="text-3xl font-bold text-blue-700">{resumeAnalysis.matchPercentage}%</p>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-4">
+                <div 
+                  className="bg-blue-600 h-4 rounded-full transition-all"
+                  style={{ width: `${resumeAnalysis.matchPercentage}%` }}
+                ></div>
+              </div>
+              {resumeAnalysis.summary && (
+                <p className="text-sm text-gray-700 mt-3">{resumeAnalysis.summary}</p>
+              )}
+            </div>
+
+            {/* Strengths & Weaknesses */}
+            <div className="grid md:grid-cols-2 gap-6 mb-6">
+              <div className="bg-green-50 border-2 border-green-200 rounded-lg p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <CheckCircle className="w-6 h-6 text-green-600" />
+                  <h3 className="text-lg font-bold text-green-900">Strengths</h3>
+                </div>
+                <ul className="space-y-2">
+                  {resumeAnalysis.strengths?.map((strength, idx) => (
+                    <li key={idx} className="text-sm text-gray-700 flex items-start gap-2">
+                      <span className="text-green-600 font-bold">✓</span>
+                      <span>{strength}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="bg-red-50 border-2 border-red-200 rounded-lg p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <X className="w-6 h-6 text-red-600" />
+                  <h3 className="text-lg font-bold text-red-900">Areas for Improvement</h3>
+                </div>
+                <ul className="space-y-2">
+                  {resumeAnalysis.weaknesses?.map((weakness, idx) => (
+                    <li key={idx} className="text-sm text-gray-700 flex items-start gap-2">
+                      <span className="text-red-600 font-bold">⚠</span>
+                      <span>{weakness}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {/* Missing Skills */}
+            {resumeAnalysis.missingSkills?.length > 0 && (
+              <div className="bg-orange-50 border-2 border-orange-200 rounded-lg p-6 mb-6">
+                <h3 className="text-lg font-bold text-orange-900 mb-4">🎯 Missing Skills for {metadata.targetRole}</h3>
+                <div className="flex flex-wrap gap-2">
+                  {resumeAnalysis.missingSkills.map((skill, idx) => (
+                    <span key={idx} className="bg-orange-200 text-orange-900 px-3 py-2 rounded-full text-sm font-medium border border-orange-300">
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+                <p className="text-sm text-gray-600 mt-4">
+                  💡 Focus on learning these skills in your roadmap below
+                </p>
+              </div>
+            )}
+
+            {/* AI Recommendations */}
+            {resumeAnalysis.recommendations?.length > 0 && (
+              <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6 mb-6">
+                <h3 className="text-lg font-bold text-blue-900 mb-4">💡 AI Recommendations</h3>
+                <ol className="space-y-3">
+                  {resumeAnalysis.recommendations.map((rec, idx) => (
+                    <li key={idx} className="text-sm text-gray-700 flex gap-3">
+                      <span className="font-bold text-blue-700 flex-shrink-0">{idx + 1}.</span>
+                      <span>{rec}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            )}
+
+            {/* ATS Optimization Keywords */}
+            {resumeAnalysis.atsOptimization?.keywordsToAdd?.length > 0 && (
+              <div className="bg-purple-50 border-2 border-purple-200 rounded-lg p-6">
+                <h3 className="text-lg font-bold text-purple-900 mb-4">🔑 Keywords to Add for Better ATS Score</h3>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {resumeAnalysis.atsOptimization.keywordsToAdd.map((keyword, idx) => (
+                    <span key={idx} className="bg-purple-200 text-purple-900 px-3 py-2 rounded-full text-sm font-medium border border-purple-300">
+                      {keyword}
+                    </span>
+                  ))}
+                </div>
+                {resumeAnalysis.atsOptimization.sectionsToImprove?.length > 0 && (
+                  <div className="mt-4 pt-4 border-t border-purple-200">
+                    <p className="text-sm font-semibold text-purple-900 mb-2">Sections to Improve:</p>
+                    <ul className="space-y-1">
+                      {resumeAnalysis.atsOptimization.sectionsToImprove.map((section, idx) => (
+                        <li key={idx} className="text-sm text-gray-700">• {section}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Skills Gap Analysis */}
         <div id="skills-gap" className="bg-white rounded-lg shadow p-8 mb-8">
@@ -537,7 +694,7 @@ export default function ResultsPage() {
             </div>
           </div>
         </div>
-
+        
         {/* Learning Path with Progress Checkboxes */}
         <div id="learning-path" className="bg-white rounded-lg shadow p-8 mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">📚 Month-by-Month Learning Path</h2>
@@ -548,7 +705,6 @@ export default function ResultsPage() {
               
               return (
                 <div key={idx} className={`border-l-4 ${isCompleted ? 'border-green-600 bg-green-50' : 'border-blue-600 bg-gray-50'} pl-6 py-4 rounded-r-lg relative transition-all`}>
-                  {/* Progress Checkbox */}
                   <button
                     onClick={() => toggleProgress(monthId)}
                     className={`absolute -left-3 top-6 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all print:hidden ${
@@ -896,7 +1052,7 @@ export default function ResultsPage() {
           </div>
         </div>
       </div>
-        <AIChatbot roadmapData={analysisData} />
+      <AIChatbot roadmapData={analysisData} />
     </div>
   );
 }

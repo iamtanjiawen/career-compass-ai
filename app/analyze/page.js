@@ -39,7 +39,7 @@ export default function AnalyzePage() {
     workPreference: '',
     timeline: '6',
     
-    // Work Preferences (NEW - Professional additions)
+    // Work Preferences
     workEnvironment: '',
     workStyle: '',
     careerPriority: [],
@@ -60,9 +60,8 @@ export default function AnalyzePage() {
   const [useManualEntry, setUseManualEntry] = useState(false);
   const [error, setError] = useState('');
   const [currentStep, setCurrentStep] = useState(1);
+  const [resumeAnalysis, setResumeAnalysis] = useState(null); // ADD THIS
   const totalSteps = 4;
-
-  // ... (keep all your existing useEffects and functions) ...
 
   useEffect(() => {
     if (formData.country) {
@@ -178,7 +177,13 @@ export default function AnalyzePage() {
         throw new Error(data.error || 'Analysis failed');
       }
 
-      sessionStorage.setItem('careerAnalysis', JSON.stringify(data));
+      // UPDATED: Include resume analysis in session storage
+      const resultData = {
+        ...data,
+        resumeAnalysis: resumeAnalysis
+      };
+
+      sessionStorage.setItem('careerAnalysis', JSON.stringify(resultData));
       router.push('/results');
       
     } catch (error) {
@@ -206,7 +211,6 @@ export default function AnalyzePage() {
     }),
   };
 
-  // Career priority options
   const careerPriorities = [
     { value: 'high-salary', label: 'High Salary' },
     { value: 'work-life-balance', label: 'Work-Life Balance' },
@@ -218,7 +222,6 @@ export default function AnalyzePage() {
     { value: 'flexibility', label: 'Flexible Work Arrangements' }
   ];
 
-  // Industry preferences
   const industries = [
     { value: 'tech', label: 'Technology/Software' },
     { value: 'finance', label: 'Finance/Banking' },
@@ -231,7 +234,6 @@ export default function AnalyzePage() {
     { value: 'manufacturing', label: 'Manufacturing/Engineering' }
   ];
 
-  // Soft skills options
   const softSkillsList = [
     { value: 'communication', label: 'Communication' },
     { value: 'leadership', label: 'Leadership' },
@@ -254,7 +256,6 @@ export default function AnalyzePage() {
       </div>
 
       <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-8">
-        {/* Header with Progress */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Career Assessment
@@ -263,7 +264,6 @@ export default function AnalyzePage() {
             Complete all sections for the most accurate career roadmap
           </p>
           
-          {/* Progress Bar */}
           <div className="flex items-center justify-between mb-4">
             {[1, 2, 3, 4].map((step) => (
               <div key={step} className="flex items-center flex-1">
@@ -304,7 +304,6 @@ export default function AnalyzePage() {
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">📚 Education Background</h2>
               
-              {/* Country */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Country *
@@ -326,7 +325,6 @@ export default function AnalyzePage() {
                 />
               </div>
 
-              {/* University */}
               {formData.country && (
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -389,7 +387,6 @@ export default function AnalyzePage() {
                 </div>
               )}
 
-              {/* Education Level */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Education Level *
@@ -412,7 +409,6 @@ export default function AnalyzePage() {
                 </div>
               </div>
 
-              {/* Field of Study */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Field of Study *
@@ -427,7 +423,6 @@ export default function AnalyzePage() {
                 />
               </div>
 
-              {/* NEW: Expected Graduation */}
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -442,7 +437,6 @@ export default function AnalyzePage() {
                   <p className="text-xs text-gray-500 mt-1">Helps calculate realistic timelines</p>
                 </div>
 
-                {/* NEW: GPA */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     GPA / Academic Standing (Optional)
@@ -469,21 +463,17 @@ export default function AnalyzePage() {
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">💼 Skills & Experience</h2>
 
-            
+              {/* RESUME UPLOAD WITH ANALYSIS CAPTURE */}
               <div className="mb-8">
                 <ResumeUpload 
-                targetRole={formData.targetRole?.label || formData.course}
-                onAnalysisComplete={(analysis) => {
-                    console.log('Resume analysis:', analysis);
-                    // Optionally auto-fill skills from resume
-                    if (analysis.extractedData?.technicalSkills) {
-                    // You can pre-populate skills here
-                    }
-                }}
+                  targetRole={formData.targetRole?.label || formData.course}
+                  onAnalysisComplete={(analysis) => {
+                    console.log('✅ Resume analysis received:', analysis);
+                    setResumeAnalysis(analysis); // SAVE THE ANALYSIS
+                  }}
                 />
-            </div>
+              </div>
             
-              {/* Technical Skills */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Technical Skills *
@@ -502,7 +492,6 @@ export default function AnalyzePage() {
                 <p className="text-xs text-gray-500 mt-1">Programming languages, tools, frameworks</p>
               </div>
 
-              {/* Soft Skills */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Soft Skills (Select top 3-5) *
@@ -519,7 +508,6 @@ export default function AnalyzePage() {
                 <p className="text-xs text-gray-500 mt-1">Maximum 5 skills</p>
               </div>
 
-              {/* NEW: Certifications */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Certifications (Optional)
@@ -534,7 +522,6 @@ export default function AnalyzePage() {
                 <p className="text-xs text-gray-500 mt-1">List any professional certifications</p>
               </div>
 
-              {/* NEW: Projects */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Notable Projects (Optional but Recommended)
@@ -549,7 +536,6 @@ export default function AnalyzePage() {
                 <p className="text-xs text-gray-500 mt-1">Helps AI recommend relevant portfolio projects</p>
               </div>
 
-              {/* NEW: Internships/Work Experience */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Internships / Work Experience *
@@ -570,7 +556,6 @@ export default function AnalyzePage() {
                 </select>
               </div>
 
-              {/* NEW: Currently Employed */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Current Employment Status *
@@ -605,7 +590,6 @@ export default function AnalyzePage() {
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">🎯 Career Goals</h2>
 
-              {/* Target Role */}
               {formData.course && availableJobRoles.length > 0 && (
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -623,7 +607,6 @@ export default function AnalyzePage() {
                 </div>
               )}
 
-              {/* NEW: Alternative Roles */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Alternative Roles (Optional)
@@ -640,7 +623,6 @@ export default function AnalyzePage() {
                 <p className="text-xs text-gray-500 mt-1">Helps create a broader career strategy</p>
               </div>
 
-              {/* Timeline */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Timeline to Job-Ready *
@@ -678,7 +660,6 @@ export default function AnalyzePage() {
                 </div>
               </div>
 
-              {/* NEW: Career Motivation */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   What motivates you most in your career? *
@@ -694,7 +675,6 @@ export default function AnalyzePage() {
                 <p className="text-xs text-gray-500 mt-1">This helps personalize your learning path</p>
               </div>
 
-              {/* NEW: Job Search Status */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Current Job Search Status *
@@ -721,7 +701,6 @@ export default function AnalyzePage() {
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">⚙️ Work Preferences</h2>
 
-              {/* NEW: Career Priorities */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   What matters most to you? (Select top 3) *
@@ -738,7 +717,6 @@ export default function AnalyzePage() {
                 <p className="text-xs text-gray-500 mt-1">Choose up to 3 priorities</p>
               </div>
 
-              {/* NEW: Industry Preference */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Preferred Industries (Select 1-3)
@@ -754,7 +732,6 @@ export default function AnalyzePage() {
                 />
               </div>
 
-              {/* NEW: Work Environment */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Preferred Work Environment *
@@ -782,7 +759,6 @@ export default function AnalyzePage() {
                 </div>
               </div>
 
-              {/* NEW: Company Size */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Preferred Company Size *
@@ -810,7 +786,6 @@ export default function AnalyzePage() {
                 </div>
               </div>
 
-              {/* NEW: Willing to Relocate */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Willing to relocate for the right opportunity? *
@@ -838,7 +813,6 @@ export default function AnalyzePage() {
                 <p className="text-xs text-gray-500 mt-1">Affects job targeting and salary expectations</p>
               </div>
 
-              {/* NEW: Work Style */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   How do you prefer to work? *

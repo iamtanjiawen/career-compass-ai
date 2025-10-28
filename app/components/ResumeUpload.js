@@ -30,48 +30,56 @@ export default function ResumeUpload({ targetRole, onAnalysisComplete }) {
     }
   };
 
-  const analyzeResume = async () => {
+    const analyzeResume = async () => {
     if (!file) return;
     
     setAnalyzing(true);
     setError('');
 
     try {
-      // Read file as text
-      const text = await readFileAsText(file);
-      
-      // Send to API
-      const response = await fetch('/api/analyze-resume', {
+        // Read file as text
+        const text = await readFileAsText(file);
+        
+        console.log('📤 Sending resume to API...');
+        console.log('Resume text length:', text.length);
+        
+        // Send to API
+        const response = await fetch('/api/analyze-resume', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          resumeText: text,
-          targetRole: targetRole || 'Software Developer'
+            resumeText: text,
+            targetRole: targetRole || 'Software Developer'
         })
-      });
+        });
 
-      if (!response.ok) {
-        throw new Error('Analysis failed');
-      }
+        console.log('📥 API Response status:', response.status);
 
-      const data = await response.json();
-      
-      if (data.success) {
+        if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('API Error:', errorData);
+        throw new Error(errorData.error || `API Error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('✅ Analysis received:', data);
+        
+        if (data.success) {
         setAnalysis(data.analysis);
         if (onAnalysisComplete) {
-          onAnalysisComplete(data.analysis);
+            onAnalysisComplete(data.analysis);
         }
-      } else {
-        throw new Error(data.error);
-      }
+        } else {
+        throw new Error(data.error || 'Analysis failed');
+        }
 
     } catch (err) {
-      console.error('Resume analysis error:', err);
-      setError('Failed to analyze resume. Please try again.');
+        console.error('❌ Resume analysis error:', err);
+        setError(err.message || 'Failed to analyze resume. Please try again.');
     } finally {
-      setAnalyzing(false);
+        setAnalyzing(false);
     }
-  };
+    };
 
   const readFileAsText = (file) => {
     return new Promise((resolve, reject) => {
