@@ -2,7 +2,7 @@
 
 > **AI-powered career guidance platform with live video interview practice**
 
-[![Live Demo](https://img.shields.io/badge/demo-live-success)](https://career-compass-ai.vercel.app)
+[![Live Demo](https://img.shields.io/badge/demo-live-success)](https://career-compass-ai-chi.vercel.app)
 [![GitHub](https://img.shields.io/badge/github-repo-blue)](https://github.com/iamtanjiawen/career-compass-ai)
 [![Built For](https://img.shields.io/badge/Built%20For-LuminHacks%202025-purple)](https://luminhacks.devpost.com)
 
