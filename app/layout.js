@@ -12,8 +12,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Career Compass AI",
-  description: "Practice interviews with AI and get instant feedback to ace your job interviews.",
+  title: "Career Compass AI - AI Career Guidance Platform",
+  description: "Practice interviews with AI, get career guidance, and analyze your resume with Career Compass AI",
 };
 
 export default function RootLayout({ children }) {
