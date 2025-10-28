@@ -95,7 +95,7 @@ npm install
 
 Create a `.env.local` file in the root directory:
 ```env
-GOOGLE_GENERATIVE_AI_API_KEY=your_gemini_api_key_here
+GOOGLE_GENERATIVE_AI_API_KEY=AIzaSyCr96wx__RlyICbrB9uIgz5JR1cyoIhT-8
 ```
 
 Get your API key from: [Google AI Studio](https://aistudio.google.com/app/apikey)
