@@ -65,7 +65,7 @@ Career Compass AI is an intelligent career guidance system that helps job seeker
 
 ## 🎥 Demo Video
 
-[Watch Demo](YOUR_YOUTUBE_LINK_HERE)
+[Watch Demo]https://youtu.be/LffXzU2rZcc
 
 *3-minute video showcasing all features*
 
